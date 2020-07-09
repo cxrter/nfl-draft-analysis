@@ -54,7 +54,7 @@ svg
     .style("fill", "EBEBEB")
 
 //Read the data
-d3.csv("nfl-draft-analysis/pfr_draft_data.csv", function(data) {
+d3.csv("/nfl-draft-analysis/pfr_draft_data.csv", function(data) {
 
 // filter only positive scores, there's a few negatives
 var data = data.filter(function(d){
