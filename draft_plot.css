@@ -1,0 +1,42 @@
+axis line{
+  stroke: grey;
+}
+
+.axis path{
+  stroke: grey;
+}
+
+.axis text{
+  fill: grey;
+}
+
+.btn-group-xs > .btn, .btn-xs {
+  padding: .8em .4em;
+  font-size: 0.7vw;
+  line-height: .5;
+  border-radius: 0vw;
+  background-color:#494d59;
+}
+
+.btn-group-xs-teams > .btn, .btn-xs {
+  padding: .6em .4em;
+  font-size: 0.7vw;
+  line-height: .5;
+  border-radius: 0vw;
+}
+
+.area {
+    fill: #126638;
+    stroke-width: 0;
+    opacity:0.1
+}
+
+#slider-range {
+    background: #242630;
+}
+
+.ui-slider-range { background: #494d59; }
+
+scatter_svg{
+overflow: visible;}
+
