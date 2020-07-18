@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NFL Draft Viz</title>
+    <script src="https://d3js.org/d3.v4.js"></script>
+
+
+<!-- CSS only -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<!-- JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+<link rel="stylesheet" media="all" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/base/jquery-ui.css">
+
+  <script>
+  $( function() {
+    $( "#slider-range" ).slider({
+      range: true,
+      min: 2010,
+      max: 2020,
+      values: [ 2012, 2018 ],
+      slide: function( event, ui ) {
+        $( "#amount-low" ).val(ui.values[ 0 ] );
+        $( "#amount-high" ).val(ui.values[ 1 ]);
+      }
+
+    });
+    $( "#amount-high" ).val($( "#slider-range" ).slider( "values", 1 ) );
+    $( "#amount-low" ).val($( "#slider-range" ).slider( "values", 0 ) );
+  } );
+  </script>
+
+
+<link rel="stylesheet" href="../static/css/draft_plot.css">
+
+</head>
+
+<body style="background-color:#f5f5f5; font-family:Courier New;">
+
+<div class="container-fluid pt-3 border-left border-right" style="width:75%; height:100%; background-color:#242630;">
+
+<div class="jumbotron p-3" style="padding-bottom:0px; background-color:#242630">
+        <nav class="navbar navbar-light" style="background-color: #4595d1;">
+</nav>
+    <div class="row">
+        <div class="col text-center">
+            <p class="display-1" style="color:white;font-size:5em; margin-bottom:0px; margin-top:15px"><strong>THE NFL DRAFT</strong></p>
+            <div class="text-muted" style="font-size:1.5em">Interactive Draft Analysis Tool</div>
+        </div>
+    </div>
+</div>
+<hr style="border-color: #7f8185;"/>
+
+
+    <div class="row">
+        <div class="col">
+            <p style="color:white; margin-left:50px; margin-bottom:0px; font-size:2em;">The Value of Historical Draft Picks</p>
+            <p style="color:grey; margin-left:50px; font-size:1em;">Approximate Value per Year with Drafting Team</p>
+            <p style="color:grey; margin-left:50px; margin-top:-15px; font-size:1em;">Read more about how AV is calculated
+                <a style="color:inherit" target="_blank" href="https://www.sports-reference.com/blog/approximate-value/">here</a></p>
+        </div>
+    </div>
+
+
+    <div class="row justify-content-center p-3">
+        <div class="col-auto">
+            <div class="btn-group flex-wrap d-flex btn-group-toggle" data-toggle="buttons" id="squad_buttons"></div>
+        </div>
+        <div class="col-auto">
+            <div class="btn-group flex-wrap d-flex btn-group-toggle" id="position_buttons"></div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col text-center">
+            <div class="btn-group btn-group-toggle" role="group" id="team_buttons"></div>
+            <button type="button" class="btn btn-secondary btn-xs reset-button">Reset</button>
+        </div>
+    </div>
+
+
+        <div class="row justify-content-center pt-3">
+        <div class="col-1 text-right">
+            <p><input type="text" size="4" id="amount-low" readonly style="border:0; color:white; background-color:#242630;"></p>
+        </div>
+        <div class="col-4">
+            <div id="slider-range" style="margin-top:6px"></div>
+        </div>
+        <div class="col-1">
+            <p><input type="text" size="4" id="amount-high" readonly style="border:0; color:white; background-color:#242630;"></p>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col" style="text-align:center;">
+            <div id="my_viz" style="background-color:#242630"></div>
+        </div>
+    </div>
+
+<!--        <div class="row pt-5">-->
+<!--            <div class="col">-->
+<!--                <p style="color:white; margin-left:50px; margin-bottom:0px; font-size:2em;">What does a High Value Player look like?</p>-->
+<!--                <p style="color:grey; margin-left:50px; font-size:1em;">Viz here of Lamar/Mahomes</p>-->
+<!--            </div>-->
+<!--        </div>-->
+
+</div>
+
+
+
+<script src="../static/js/draft_plot_v5.js"></script>
+</body>
+</html>
