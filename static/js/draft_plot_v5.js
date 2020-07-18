@@ -42,7 +42,7 @@ var scatter_svg = d3.select("#my_viz")
 
 
 //Read the data
-d3.csv("../pfr_draft_data.csv", function(data) {
+d3.csv("pfr_draft_data.csv", function(data) {
 
 // filter only positive scores, there's a few negatives
 var data = data.filter(function(d){
