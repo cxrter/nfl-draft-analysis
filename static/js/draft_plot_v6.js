@@ -42,8 +42,8 @@ var scatter_svg = d3.select("#my_viz")
 
 
 //Read the data
-d3.csv("../pfr_draft_data.csv", function(data) {
-//d3.csv("pfr_draft_data.csv", function(data) {
+//d3.csv("../pfr_draft_data.csv", function(data) {
+d3.csv("pfr_draft_data.csv", function(data) {
 
 var colors = ['7AC74F', 'BD93BD', '3F88C5', 'F9C80E']
 var highlight_list = ['ARI'];
