@@ -1,7 +1,7 @@
 // set the dimensions and margins of the graph
 var margin = {top: 20, right: 60, bottom: 50, left: 40},
     scatter_height = 400 - margin.top - margin.bottom
-    scatter_width = 800 - margin.left - margin.right;
+    scatter_width = 1100 - margin.left - margin.right;
 
 function responsivefy(svg) {
       // get container + svg aspect ratio
