@@ -3,6 +3,9 @@ var margin = {top: 20, right: 60, bottom: 50, left: 40},
     scatter_height = 400 - margin.top - margin.bottom
     scatter_width = 830 - margin.left - margin.right;
 
+// load their browser on 100%    
+document.body.style.zoom="100%"
+
 function responsivefy(svg) {
       // get container + svg aspect ratio
       var container = d3.select(svg.node().parentNode),
