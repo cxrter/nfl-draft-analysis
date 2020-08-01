@@ -42,17 +42,17 @@ var scatter_svg = d3.select("#my_viz")
 
 
 //Read the data
-//d3.csv("../pfr_draft_data.csv", function(data) {
-d3.csv("pfr_draft_data.csv", function(data) {
+d3.csv("../pfr_draft_data.csv", function(data) {
+//d3.csv("pfr_draft_data.csv", function(data) {
 
-var colors = ['7AC74F', 'BD93BD', '3F88C5', 'F9C80E']
+var colors = ['E3B264', 'FEAED0', '74A57F', '3F88C5']
 var highlight_list = ['ARI'];
-var color_map = [{'team':'ARI', 'color':'DB222A'}];
+var color_map = [{'team':'ARI', 'color':'BA5B4F'}];
 
 
 // filter only positive scores, there's a few negatives
 var data = data.filter(function(d){
-        return d.draft_av >= parseInt('0');
+        return d.career_av >= parseInt('0');
 })
 
 // filter only players who have been a starter for the team
@@ -70,7 +70,8 @@ return new_data[0].color_primary;
 
 
 var allTeams = (d3.map(data, function(d){return(d.modern_code)}).keys()).sort()
-var allPositions = (d3.map(data, function(d){return(d.pos)}).keys()).sort()
+var allPositions = ['DB', 'DL', 'LB', 'OL', 'QB', 'RB', 'TE', 'WR']
+//var allPositions = (d3.map(data, function(d){return(d.pos_group)}).keys()).sort()
 
 
 var team_button_html = ''
@@ -104,7 +105,6 @@ for (i in allPositions){
 document.getElementById("position_buttons").innerHTML = pos_button_html;
 
 
-
   // Initialise X axis
   var x = d3.scaleLinear()
     .range([ 0, scatter_width ])
@@ -114,14 +114,14 @@ document.getElementById("position_buttons").innerHTML = pos_button_html;
     .attr("class", "axis")
     .style('font-size', '0.6vw')
     .attr("stroke-dasharray", "1,1")
-    .call(d3.axisBottom(x).tickSize(-scatter_height*1.05).tickValues([0,32,64,102,138,173,214,254]).tickPadding(20).tickFormat(''))
+    .call(d3.axisBottom(x).tickSize(-scatter_width).tickValues([0,32,64,102,138,173,214,254]).tickPadding(20).tickFormat(''))
     .select(".domain").remove()
 
 
   // Initialise Y axis
   var y = d3.scaleLinear()
     .range([ scatter_height, 0])
-    .domain([0,d3.max(data, function(d) { return parseInt(d.draft_av)/parseInt(d.years_with_team); })])
+    .domain([0,d3.max(data, function(d) { return parseInt(d.career_av)/parseInt(d.years_with_team); })])
   var yAxis = scatter_svg.append("g")
     .attr("class", "axis")
     .style('font-size', '0.6vw')
@@ -130,6 +130,8 @@ document.getElementById("position_buttons").innerHTML = pos_button_html;
     //.call(d3.axisLeft(y).tickSize(-scatter_width-15).ticks(5).tickPadding(10))
     .attr("stroke-dasharray", "1,1")
     .select(".domain").remove()
+
+var symbol = d3.symbol();
 
  // Add X axis label:
   scatter_svg.append("text")
@@ -214,7 +216,7 @@ var pickar = [32,64,102,138,173,214,254]
     if (i==0){var filterd = data.filter(function(d){return d.draft_pick <= pickar[i];})}
     else{var filterd = data.filter(function(d){return d.draft_pick <= pickar[i] && d.draft_pick > pickar[i-1];})}
     var filtered_sorted = filterd
-        .map(d => d.draft_av/d.years_with_team)
+        .map(d => d.career_av/d.years_with_team)
         .filter(d => d !== null && !isNaN(d))
         .sort(d3.ascending);
     var i_quant = (d3.quantile(filtered_sorted, 0.95))
@@ -336,7 +338,7 @@ else if (pos_list.includes('Special')){var data_t = data.filter(function(d){
         return d.squad == 'special';})}
 
 else{var data_t = data.filter(function(d){
-        return (pos_list.indexOf(d.pos) != -1);})}
+        return (pos_list.indexOf(d.pos_group) != -1);})}
 
 var upper_year = $( "#amount-high" ).val();
 var lower_year = $( "#amount-low" ).val();
@@ -348,7 +350,7 @@ var data_t = data_t.filter(function(d){
     if (i==0){var filterd = data_t.filter(function(d){return d.draft_pick <= pickar[i];})}
     else{var filterd = data_t.filter(function(d){return d.draft_pick <= pickar[i] && d.draft_pick > pickar[i-1];})}
     var filtered_sorted = filterd
-        .map(d => d.draft_av/d.years_with_team)
+        .map(d => d.career_av/d.years_with_team)
         .filter(d => d !== null && !isNaN(d))
         .sort(d3.ascending);
     var i_quant = (d3.quantile(filtered_sorted, 0.95))
@@ -362,28 +364,29 @@ quant_path
 
 
 // Update our circles
-var circles = scatter_svg.selectAll("circle")
+var circles = scatter_svg.selectAll(".dot")
         .data(data_t);
 
+
     circles
-      .attr("class", function (d) { return "dot " + d.pos + " " + d.modern_code + " " + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join(''))} )
-      .attr("cx", function (d) { return x(d.draft_pick); } )
-      .attr("cy", function (d) { return y(d.draft_av/d.years_with_team); } )
-      .attr("r", 4)
+      .attr("class", function (d) {if ((d.player).toString().includes('HOF')){return "dot " + d.pos_group + " " + d.modern_code + " " + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join('')) + " " + "classhof"}
+       else {return "dot " + d.pos_group + " " + d.modern_code + " " + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join(''))}})
+      .attr("d", symbol.type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}))
       .style('opacity', 0.1)
       .style("fill", 'e1e1e1')
+      .attr('transform',function(d){ return "translate("+x(d.draft_pick)+","+y(d.career_av/d.years_with_team)+")"; })
 
-    circles.enter()
-        .append("circle")
-      .attr("class", function (d) { return "dot " + d.pos + " " + d.modern_code + " " + d.pfr_player_code + " " + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join(''))} )
-      .attr("cx", function (d) { return x(d.draft_pick); } )
-      .attr("cy", function (d) { return y(d.draft_av/d.years_with_team); } )
-      .attr("r", 4)
-      .style("fill", '#e1e1e1')
-      .style('opacity', 0.1)
-      .on("mouseover", mouseover)
-      .on("mousemove", mousemove )
-      .on("mouseleave", mouseleave );
+        circles.enter()
+         .append("path")
+              .attr("class", function (d) {if ((d.player).toString().includes('HOF')){return "dot " + d.pos_group + " " + d.modern_code + " " + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join('')) + " " + "classhof"}
+               else {return "dot " + d.pos_group + " " + d.modern_code + " " + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join(''))}})
+              .attr("d", symbol.type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}))
+              .style("fill", '#e1e1e1')
+              .style('opacity', 0.1)
+              .attr('transform',function(d){ return "translate("+x(d.draft_pick)+","+y(d.career_av/d.years_with_team)+")"; })
+              .on("mouseover", mouseover)
+              .on("mousemove", mousemove )
+              .on("mouseleave", mouseleave );
 
       circles.exit().remove()
 
@@ -397,14 +400,24 @@ quant_path
 function update_highlight() {
 
 
-
       var n_checked = highlight_list.length
-
         for (i in allTeams){
         scatter_svg.selectAll("." + CSS.escape(allTeams[i])).attr("r", 4).style("fill", '#e1e1e1').style('opacity', 0.1).style("stroke-width", 0).style("stroke", 'grey');
 
+    d3.selectAll(".hof_checkbox")
+        if ($(".hof").hasClass('active')){
+            scatter_svg.selectAll('.classhof')
+                .style('fill', function(d) {if((d.player).toString().includes('HOF')){ return 'yellow'} } )
+                .style('opacity', 0.5)
+                }
+        else{scatter_svg.selectAll('.classhof')
+                .style('fill', '#e1e1e1' )
+                .style('opacity', 0.1)
+                .raise()}
+
         d3.select(".btn-"+allTeams[i])
            .style('background-color','#494d59')
+
 
         }
 
@@ -420,8 +433,13 @@ function update_highlight() {
             .style('background-color', '#' + color_map[(i)%5].color)
         }
 
+
       }
 
+
+
+
+// function to remove objects from list of dictionaries
 var removeByAttr = function(arr, attr, value){
     var i = arr.length;
     while(i--){
@@ -436,23 +454,22 @@ var removeByAttr = function(arr, attr, value){
     return arr;
 }
 
-var n_checked = 0;
+
 // When team selection changes, update highlights
-d3.selectAll(".team_checkbox").on('change', function(d) {
-// get the box that was just clicked. If it was highlighted, append it to list. Otherwise remove it from list.
-cb = d3.select(this)
-    if (cb.property("checked")){
-    n_checked = n_checked + 1
-    highlight_list.push(this.value)
-    var obj = {}
-    obj['team'] = this.value
-    obj['color'] = colors[colors.length - 1]
-    color_map.push(obj)
-    colors.pop()
-    }
-    else {colors.push(color_map.filter(obj => {return obj.team === this.value})[0].color); color_map = removeByAttr(color_map, 'team', this.value);};
-
-
+    var n_checked = 0;
+    d3.selectAll(".team_checkbox").on('change', function(d) {
+    // get the box that was just clicked. If it was highlighted, append it to list. Otherwise remove it from list.
+    cb = d3.select(this)
+        if (cb.property("checked")){
+        n_checked = n_checked + 1
+        highlight_list.push(this.value)
+        var obj = {}
+        obj['team'] = this.value
+        obj['color'] = colors[colors.length - 1]
+        color_map.push(obj)
+        colors.pop()
+        }
+        else {colors.push(color_map.filter(obj => {return obj.team === this.value})[0].color); color_map = removeByAttr(color_map, 'team', this.value);};
 
 update_highlight()
 });
@@ -460,72 +477,80 @@ update_highlight()
 
 
 // Handle Squad selections (radio buttons)
-d3.selectAll(".squad_checkbox").on("click", function(d) {  // when a radio button selected
-    for (i in allPositions){  // for each position checkbox
-    if ($("."+allPositions[i]).hasClass('active')){  // if the checkbox is checked
-    $("."+allPositions[i]).button("toggle")  // untoggle it
-    $(".positions_checkbox").prop('checked', false);  // and uncheck it
-    }
-    }
+    d3.selectAll(".squad_checkbox").on("click", function(d) {  // when a radio button selected
+        for (i in allPositions){  // for each position checkbox
+        if ($("."+allPositions[i]).hasClass('active')){  // if the checkbox is checked
+        $("."+allPositions[i]).button("toggle")  // untoggle it
+        $(".positions_checkbox").prop('checked', false);  // and uncheck it
+        }
+        }
 
-    if ($(".Custom").hasClass('active')){  // if custom radio is selected
-    $("."+allPositions[0]).button("toggle")  // toggle first position button
-    $(".check_"+allPositions[0]).prop('checked', true); // and check first button (so data not blank)
-    $(".Custom span").html('Custom')
-    }
+        if ($(".Custom").hasClass('active')){  // if custom radio is selected
+        $("."+allPositions[0]).button("toggle")  // toggle first position button
+        $(".check_"+allPositions[0]).prop('checked', true); // and check first button (so data not blank)
+        $(".Custom span").html('Custom')
+        }
 
-    update_chart()
+        update_chart()
 
-});
+
+    });
 
 
 
 // When a checkbox selected, toggle custom and run update on checked boxes
-d3.selectAll(".positions_checkbox").on("change", function(d) {
-    if (! $(".Custom").hasClass('active')){
-    $(".Custom").button("toggle")}
-    $(".Custom span").html('Reset')
-    update_chart()
-});
+    d3.selectAll(".positions_checkbox").on("change", function(d) {
+        if (! $(".Custom").hasClass('active')){
+        $(".Custom").button("toggle")}
+        $(".Custom span").html('Reset')
+        update_chart()
+    });
 
 
 // handle resetting team highlighting
-d3.selectAll(".reset-button").on('click', function(d){
-    for (i in allTeams){  // for each team checkbox
-    if ($("."+allTeams[i]).hasClass('active')){  // if the checkbox is checked
-    $("."+allTeams[i]).button("toggle") // untoggle it
-    $(".team_checkbox").prop('checked', false)  // and uncheck it
-    $("."+allTeams[i]).removeClass('active')
-    }
-    }
-    // reset highlight list to empty
-    highlight_list = [];
-    color_map = [];
-    colors = ['7AC74F', 'BD93BD', '3F88C5', 'F9C80E', 'DB222A']
-    update_highlight()
-    })
+    d3.selectAll(".reset-button").on('click', function(d){
+        for (i in allTeams){  // for each team checkbox
+        if ($("."+allTeams[i]).hasClass('active')){  // if the checkbox is checked
+        $("."+allTeams[i]).button("toggle") // untoggle it
+        $(".team_checkbox").prop('checked', false)  // and uncheck it
+        $("."+allTeams[i]).removeClass('active')
+        }
+        }
+        // reset highlight list to empty
+        highlight_list = [];
+        color_map = [];
+        colors = ['E3B264', 'FEAED0', '74A57F', '3F88C5', 'BA5B4F']
+        update_highlight()
+        })
 
 
 // handle slider change
-  $( function() {
-    $( "#slider-range" ).slider({
-      range: true,
-      min: 2010,
-      max: 2020,
-      values: [ 2012, 2018 ],
-      slide: function( event, ui ) {
-        $( "#amount-low" ).val(ui.values[ 0 ] );
-        $( "#amount-high" ).val(ui.values[ 1 ]);
-        update_chart()
-      }
+      $( function() {
+        $( "#slider-range" ).slider({
+          range: true,
+          min: 1993,
+          max: 2020,
+          values: [ 1995, 2000 ],
+          slide: function( event, ui ) {
+            $( "#amount-low" ).val(ui.values[ 0 ] );
+            $( "#amount-high" ).val(ui.values[ 1 ]);
+            update_chart()
+          }
 
-    });
-    $( "#amount-high" ).val($( "#slider-range" ).slider( "values", 1 ) );
-    $( "#amount-low" ).val($( "#slider-range" ).slider( "values", 0 ) );
+        });
+        $( "#amount-high" ).val($( "#slider-range" ).slider( "values", 1 ) );
+        $( "#amount-low" ).val($( "#slider-range" ).slider( "values", 0 ) );
 
-  } );
+      } );
 
 
+// handle hof
+    d3.selectAll(".hof_checkbox").on("change", function(d) {
+    update_highlight()
+//        if ($(".hof").hasClass('active')){
+//        highlight_hof()}
+//        else{update_highlight()}
+        })
 
 
 // initiate
