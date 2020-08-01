@@ -1,7 +1,7 @@
 // set the dimensions and margins of the graph
 var margin = {top: 20, right: 60, bottom: 50, left: 40},
     scatter_height = 400 - margin.top - margin.bottom
-    scatter_width = 800 - margin.left - margin.right;
+    scatter_width = 830 - margin.left - margin.right;
 
 function responsivefy(svg) {
       // get container + svg aspect ratio
@@ -42,7 +42,8 @@ var scatter_svg = d3.select("#my_viz")
 
 
 //Read the data
-d3.csv("pfr_draft_data.csv", function(data) {
+d3.csv("../pfr_draft_data.csv", function(data) {
+//d3.csv("pfr_draft_data.csv", function(data) {
 
 var colors = ['E3B264', 'FEAED0', '74A57F', '3F88C5']
 var highlight_list = ['ARI'];
@@ -130,7 +131,6 @@ document.getElementById("position_buttons").innerHTML = pos_button_html;
     .attr("stroke-dasharray", "1,1")
     .select(".domain").remove()
 
-var symbol = d3.symbol();
 
  // Add X axis label:
   scatter_svg.append("text")
@@ -149,7 +149,7 @@ var symbol = d3.symbol();
       .attr("x", - scatter_height/2)
       .style('font-size', '0.8em')
       .style('fill', 'grey')
-      .text("Approximate Value")
+      .text("Approximate Value / Year ")
 
 
     // Customization
@@ -240,7 +240,7 @@ var lineFunction = d3.line()
 
 // Add a text label.
 var text = scatter_svg.append("text")
-    .attr("x", scatter_width-40)
+    .attr("x", scatter_width-60)
     .attr("dy", -5);
 
 text.append("textPath")
@@ -270,10 +270,11 @@ text.append("textPath")
   // Its opacity is set to 1: we can now see it. Plus it set the text and position of tooltip depending on the datapoint (d)
   var mouseover = function(d) {
       d3.selectAll("." + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join('')))
-      .attr("r", 7)
+//      .attr("r", 7)
       .style('opacity', 1)
       .style('stroke', 'white')
       .style('stroke-width', 1)
+      .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(150))
 
     tooltip
       .style("opacity", 1)
@@ -295,6 +296,9 @@ text.append("textPath")
       .duration(200)
       .style('opacity', 0)
       .style('pointer-events', 'none')
+
+    d3.selectAll("." + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join('')))
+        .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(80))
 
     update_highlight()
 
@@ -370,7 +374,7 @@ var circles = scatter_svg.selectAll(".dot")
     circles
       .attr("class", function (d) {if ((d.player).toString().includes('HOF')){return "dot " + d.pos_group + " " + d.modern_code + " " + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join('')) + " " + "classhof"}
        else {return "dot " + d.pos_group + " " + d.modern_code + " " + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join(''))}})
-      .attr("d", symbol.type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}))
+      .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(80))
       .style('opacity', 0.1)
       .style("fill", 'e1e1e1')
       .attr('transform',function(d){ return "translate("+x(d.draft_pick)+","+y(d.career_av/d.years_with_team)+")"; })
@@ -379,7 +383,7 @@ var circles = scatter_svg.selectAll(".dot")
          .append("path")
               .attr("class", function (d) {if ((d.player).toString().includes('HOF')){return "dot " + d.pos_group + " " + d.modern_code + " " + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join('')) + " " + "classhof"}
                else {return "dot " + d.pos_group + " " + d.modern_code + " " + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join(''))}})
-              .attr("d", symbol.type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}))
+              .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(80))
               .style("fill", '#e1e1e1')
               .style('opacity', 0.1)
               .attr('transform',function(d){ return "translate("+x(d.draft_pick)+","+y(d.career_av/d.years_with_team)+")"; })
@@ -401,17 +405,20 @@ function update_highlight() {
 
       var n_checked = highlight_list.length
         for (i in allTeams){
-        scatter_svg.selectAll("." + CSS.escape(allTeams[i])).attr("r", 4).style("fill", '#e1e1e1').style('opacity', 0.1).style("stroke-width", 0).style("stroke", 'grey');
+        scatter_svg.selectAll("." + CSS.escape(allTeams[i])).attr("r", 2).style("fill", '#e1e1e1').style('opacity', 0.1).style("stroke-width", 0).style("stroke", 'grey')
+        .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(50));
 
     d3.selectAll(".hof_checkbox")
         if ($(".hof").hasClass('active')){
             scatter_svg.selectAll('.classhof')
                 .style('fill', function(d) {if((d.player).toString().includes('HOF')){ return 'yellow'} } )
+                .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(80))
                 .style('opacity', 0.5)
                 }
         else{scatter_svg.selectAll('.classhof')
                 .style('fill', '#e1e1e1' )
                 .style('opacity', 0.1)
+
                 .raise()}
 
         d3.select(".btn-"+allTeams[i])
@@ -424,15 +431,15 @@ function update_highlight() {
         for (i in color_map){
         scatter_svg.selectAll("." + CSS.escape(color_map[i].team))
           .raise()
-          .attr("r", 4)
+          .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(80))
           .style("stroke-width", 0)
           .style('opacity', 1)
           .style("fill", color_map[(i)%5].color)
           d3.select(".btn-"+color_map[i].team)
             .style('background-color', '#' + color_map[(i)%5].color)
         }
-
-
+    scatter_svg.selectAll('.classhof')
+    .raise()
       }
 
 
