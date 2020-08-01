@@ -42,8 +42,7 @@ var scatter_svg = d3.select("#my_viz")
 
 
 //Read the data
-d3.csv("../pfr_draft_data.csv", function(data) {
-//d3.csv("pfr_draft_data.csv", function(data) {
+d3.csv("pfr_draft_data.csv", function(data) {
 
 var colors = ['E3B264', 'FEAED0', '74A57F', '3F88C5']
 var highlight_list = ['ARI'];
@@ -71,7 +70,6 @@ return new_data[0].color_primary;
 
 var allTeams = (d3.map(data, function(d){return(d.modern_code)}).keys()).sort()
 var allPositions = ['DB', 'DL', 'LB', 'OL', 'QB', 'RB', 'TE', 'WR']
-//var allPositions = (d3.map(data, function(d){return(d.pos_group)}).keys()).sort()
 
 
 var team_button_html = ''
