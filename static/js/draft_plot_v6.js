@@ -205,7 +205,7 @@ var rect_rd1_label = rd1_label.node().getBBox();
     .attr("y", rect_rd1_label.y)
     .attr("width", rect_rd1_label.width + 10)
     .attr("height", rect_rd1_label.height)
-    .style('fill', '#242630')
+    .style('fill', '#131B23')
 d3.selectAll('.ytext').raise()
 
 
