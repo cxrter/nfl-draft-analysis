@@ -1,5 +1,5 @@
 // set the dimensions and margins of the graph
-var margin = {top: 20, right: 60, bottom: 50, left: 40},
+var margin = {top: 20, right: 20, bottom: 50, left: 40},
     scatter_height = 330 - margin.top - margin.bottom
     scatter_width = 800 - margin.left - margin.right;
 
@@ -270,19 +270,20 @@ text.append("textPath")
   // A function that change this tooltip when the user hover a point.
   // Its opacity is set to 1: we can now see it. Plus it set the text and position of tooltip depending on the datapoint (d)
   var mouseover = function(d) {
-      d3.selectAll("." + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join('')))
-//      .attr("r", 7)
-      .style('opacity', 1)
-      .style('stroke', 'white')
-      .style('stroke-width', 1)
-      .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(150))
 
-    tooltip
-      .style("opacity", 1)
   }
 
   var mousemove = function(d) {
-    var mouse = d3.mouse(d3.select('#my_viz').node()).map(function(d) {return parseInt(d); });
+      d3.selectAll("." + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join('')))
+      .style('opacity', 1)
+      .style('stroke', 'white')
+      .style('stroke-width', 1)
+      .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(120))
+
+    tooltip
+      .style("opacity", 1)
+
+        var mouse = d3.mouse(d3.select('#my_viz').node()).map(function(d) {return parseInt(d); });
     tooltip
         .style("top", mouse[1] + "px")
         .style("left", (mouse[0] + 30) + "px")
@@ -299,7 +300,7 @@ text.append("textPath")
       .style('pointer-events', 'none')
 
     d3.selectAll("." + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join('')))
-        .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(80))
+        .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(60))
 
     update_highlight()
 
@@ -375,7 +376,7 @@ var circles = scatter_svg.selectAll(".dot")
     circles
       .attr("class", function (d) {if ((d.player).toString().includes('HOF')){return "dot " + d.pos_group + " " + d.modern_code + " " + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join('')) + " " + "classhof"}
        else {return "dot " + d.pos_group + " " + d.modern_code + " " + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join(''))}})
-      .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(80))
+      .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(60))
       .style('opacity', 0.1)
       .style("fill", 'e1e1e1')
       .attr('transform',function(d){ return "translate("+x(d.draft_pick)+","+y(d.career_av/d.years_with_team)+")"; })
@@ -384,7 +385,7 @@ var circles = scatter_svg.selectAll(".dot")
          .append("path")
               .attr("class", function (d) {if ((d.player).toString().includes('HOF')){return "dot " + d.pos_group + " " + d.modern_code + " " + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join('')) + " " + "classhof"}
                else {return "dot " + d.pos_group + " " + d.modern_code + " " + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join(''))}})
-              .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(80))
+              .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(60))
               .style("fill", '#e1e1e1')
               .style('opacity', 0.1)
               .attr('transform',function(d){ return "translate("+x(d.draft_pick)+","+y(d.career_av/d.years_with_team)+")"; })
@@ -407,13 +408,13 @@ function update_highlight() {
       var n_checked = highlight_list.length
         for (i in allTeams){
         scatter_svg.selectAll("." + CSS.escape(allTeams[i])).attr("r", 2).style("fill", '#e1e1e1').style('opacity', 0.1).style("stroke-width", 0).style("stroke", 'grey')
-        .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(50));
+        .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(40));
 
     d3.selectAll(".hof_checkbox")
         if ($(".hof").hasClass('active')){
             scatter_svg.selectAll('.classhof')
                 .style('fill', function(d) {if((d.player).toString().includes('HOF')){ return 'yellow'} } )
-                .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(80))
+                .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(60))
                 .style('opacity', 0.5)
                 }
         else{scatter_svg.selectAll('.classhof')
@@ -432,7 +433,7 @@ function update_highlight() {
         for (i in color_map){
         scatter_svg.selectAll("." + CSS.escape(color_map[i].team))
           .raise()
-          .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(80))
+          .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(60))
           .style("stroke-width", 0)
           .style('opacity', 1)
           .style("fill", color_map[(i)%5].color)
