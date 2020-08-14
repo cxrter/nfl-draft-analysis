@@ -538,7 +538,7 @@ update_highlight()
           range: true,
           min: 1993,
           max: 2020,
-          values: [ 1995, 2000 ],
+          values: [ 2010, 2015 ],
           slide: function( event, ui ) {
             $( "#amount-low" ).val(ui.values[ 0 ] );
             $( "#amount-high" ).val(ui.values[ 1 ]);
