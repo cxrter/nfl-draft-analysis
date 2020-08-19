@@ -54,12 +54,17 @@ var color_map = [{'team':'ARI', 'color':'BA5B4F'}];
 
 // filter only positive scores, there's a few negatives
 var data = data.filter(function(d){
-        return d.career_av >= parseInt('0');
+        return d.career_raw_av >= parseInt('0');
 })
 
 // filter only players who have been a starter for the team
 var data = data.filter(function(d){
         return d.years_with_team >= parseInt('1');
+})
+
+// filter only players who have been a starter for the team
+var data = data.filter(function(d){
+        return d.g >= parseInt('1');
 })
 
 
@@ -122,7 +127,7 @@ document.getElementById("position_buttons").innerHTML = pos_button_html;
   // Initialise Y axis
   var y = d3.scaleLinear()
     .range([ scatter_height, 0])
-    .domain([0,d3.max(data, function(d) { return parseInt(d.career_av)/parseInt(d.years_with_team); })])
+    .domain([0,d3.max(data, function(d) { return parseInt(d.career_raw_av)/parseInt(d.g); })])
   var yAxis = scatter_svg.append("g")
     .attr("class", "axis")
     .style('font-size', '0.6vw')
@@ -148,9 +153,9 @@ document.getElementById("position_buttons").innerHTML = pos_button_html;
       .attr("transform", "rotate(-90)")
       .attr("y", -20)
       .attr("x", - scatter_height/2)
-      .style('font-size', '0.8em')
+      .style('font-size', '0.7em')
       .style('fill', 'grey')
-      .text("Approximate Value / Year ")
+      .text("Approximate Value per Game")
 
 
     // Customization
@@ -158,10 +163,10 @@ document.getElementById("position_buttons").innerHTML = pos_button_html;
 
   // Add upper label
   var hover_label = scatter_svg.append('text')
-    .attr("transform",  "translate("+scatter_width+",25)")
-    .attr('text-anchor', 'end')
+    .attr("transform",  "translate("+scatter_width/2+",0)")
+    .attr('text-anchor', 'middle')
     .attr('alignment-baseline', 'middle')
-    .attr('fill', 'white')
+    .attr('fill', 'grey')
     .style('font-size', '0.7em')
     .text('Hover to see player details');
 
@@ -216,7 +221,7 @@ var pickar = [32,64,102,138,173,214,254]
     if (i==0){var filterd = data.filter(function(d){return d.draft_pick <= pickar[i];})}
     else{var filterd = data.filter(function(d){return d.draft_pick <= pickar[i] && d.draft_pick > pickar[i-1];})}
     var filtered_sorted = filterd
-        .map(d => d.career_av/d.years_with_team)
+        .map(d => d.career_raw_av/d.g)
         .filter(d => d !== null && !isNaN(d))
         .sort(d3.ascending);
     var i_quant = (d3.quantile(filtered_sorted, 0.95))
@@ -274,11 +279,12 @@ text.append("textPath")
   }
 
   var mousemove = function(d) {
-      d3.selectAll("." + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join('')))
+      d3.selectAll("." + d.pfr_player_code.split('.').join(''))
       .style('opacity', 1)
       .style('stroke', 'white')
       .style('stroke-width', 1)
       .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(120))
+      .raise()
 
     tooltip
       .style("opacity", 1)
@@ -299,7 +305,7 @@ text.append("textPath")
       .style('opacity', 0)
       .style('pointer-events', 'none')
 
-    d3.selectAll("." + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join('')))
+    d3.selectAll("." + d.pfr_player_code.split('.').join(''))
         .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(60))
 
     update_highlight()
@@ -355,7 +361,7 @@ var data_t = data_t.filter(function(d){
     if (i==0){var filterd = data_t.filter(function(d){return d.draft_pick <= pickar[i];})}
     else{var filterd = data_t.filter(function(d){return d.draft_pick <= pickar[i] && d.draft_pick > pickar[i-1];})}
     var filtered_sorted = filterd
-        .map(d => d.career_av/d.years_with_team)
+        .map(d => d.career_raw_av/d.g)
         .filter(d => d !== null && !isNaN(d))
         .sort(d3.ascending);
     var i_quant = (d3.quantile(filtered_sorted, 0.95))
@@ -374,21 +380,21 @@ var circles = scatter_svg.selectAll(".dot")
 
 
     circles
-      .attr("class", function (d) {if ((d.player).toString().includes('HOF')){return "dot " + d.pos_group + " " + d.modern_code + " " + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join('')) + " " + "classhof"}
-       else {return "dot " + d.pos_group + " " + d.modern_code + " " + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join(''))}})
+      .attr("class", function (d) {if ((d.player).toString().includes('HOF')){return "dot " + d.pos_group + " " + d.modern_code + " " + d.pfr_player_code.split('.').join('') + " " + "classhof"}
+       else {return "dot " + d.pos_group + " " + d.modern_code + " " + d.pfr_player_code.split('.').join('')}})
       .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(60))
       .style('opacity', 0.1)
       .style("fill", 'e1e1e1')
-      .attr('transform',function(d){ return "translate("+x(d.draft_pick)+","+y(d.career_av/d.years_with_team)+")"; })
+      .attr('transform',function(d){ return "translate("+x(d.draft_pick)+","+y(d.career_raw_av/d.g)+")"; })
 
         circles.enter()
          .append("path")
-              .attr("class", function (d) {if ((d.player).toString().includes('HOF')){return "dot " + d.pos_group + " " + d.modern_code + " " + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join('')) + " " + "classhof"}
-               else {return "dot " + d.pos_group + " " + d.modern_code + " " + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join(''))}})
+              .attr("class", function (d) {if ((d.player).toString().includes('HOF')){return "dot " + d.pos_group + " " + d.modern_code + " " + d.pfr_player_code.split('.').join('') + " " + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join('')) + " " + "classhof"}
+               else {return "dot " + d.pos_group + " " + d.modern_code + " " + d.pfr_player_code.split('.').join('') + " " + CSS.escape(d.player.split(' ').join('').split('.').join('').split("'").join(''))}})
               .attr("d", d3.symbol().type(function(d){if((d.player).toString().includes('HOF')){ return d3.symbolStar} else{return d3.symbolCircle}}).size(60))
               .style("fill", '#e1e1e1')
               .style('opacity', 0.1)
-              .attr('transform',function(d){ return "translate("+x(d.draft_pick)+","+y(d.career_av/d.years_with_team)+")"; })
+              .attr('transform',function(d){ return "translate("+x(d.draft_pick)+","+y(d.career_raw_av/d.g)+")"; })
               .on("mouseover", mouseover)
               .on("mousemove", mousemove )
               .on("mouseleave", mouseleave );
@@ -537,8 +543,8 @@ update_highlight()
         $( "#slider-range" ).slider({
           range: true,
           min: 1993,
-          max: 2020,
-          values: [ 2010, 2015 ],
+          max: 2019,
+          values: [ 2010, 2017 ],
           slide: function( event, ui ) {
             $( "#amount-low" ).val(ui.values[ 0 ] );
             $( "#amount-high" ).val(ui.values[ 1 ]);
@@ -572,4 +578,3 @@ update_chart()
 //var filtered_data = data.filter(function(d){
 //        return d.column == xyz;
 //})
-
