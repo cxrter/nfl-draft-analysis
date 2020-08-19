@@ -64,7 +64,7 @@ var data = data.filter(function(d){
 
 // filter only players who have been a starter for the team
 var data = data.filter(function(d){
-        return d.g >= parseInt('1');
+        return d.g >= parseInt('10');
 })
 
 
